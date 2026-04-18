@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeanie — Your AI Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0e0e0e;
+      --white: #fafaf8;
+      --gray-100: #f5f4f0;
+      --gray-200: #e8e6e0;
+      --gray-400: #b0ada4;
+      --gray-600: #6e6b64;
+      --accent: #1a1a1a;
+      --radius: 2px;
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--white);
+      color: var(--black);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 4rem;
+      background: rgba(250,250,248,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      color: var(--black);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--gray-600);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--black); }
+    .nav-cta {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--black);
+      text-decoration: none;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--black);
+      border-radius: var(--radius);
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-cta:hover { background: var(--black); color: var(--white); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 8rem 4rem 4rem;
+      gap: 4rem;
+    }
+    .hero-text { max-width: 540px; }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-600);
+      margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 1px;
+      background: var(--gray-600);
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--black);
+      margin-bottom: 1.5rem;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--gray-600);
+    }
+    .hero-desc {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: var(--gray-600);
+      max-width: 420px;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .btn-primary {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 500;
+      background: var(--black);
+      color: var(--white);
+      padding: 0.75rem 2rem;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      display: inline-block;
+    }
+    .btn-primary:hover { opacity: 0.8; }
+    .btn-link {
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--gray-600);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+    .btn-link:hover { color: var(--black); }
+    .btn-link::after { content: '→'; }
+
+    /* HERO WIDGET */
+    .hero-widget {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+    .widget-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1rem;
+    }
+    .widget-pulse {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--black);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .widget-pulse::before, .widget-pulse::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(14,14,14,0.2);
+      animation: ripple 2.4s ease-out infinite;
+    }
+    .widget-pulse::before { width: 80px; height: 80px; animation-delay: 0s; }
+    .widget-pulse::after { width: 110px; height: 110px; animation-delay: 0.8s; }
+    @keyframes ripple {
+      0% { opacity: 1; transform: scale(0.6); }
+      100% { opacity: 0; transform: scale(1); }
+    }
+    .widget-pulse svg {
+      width: 22px;
+      height: 22px;
+      fill: var(--white);
+    }
+    .widget-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-600);
+    }
+    .widget-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      color: var(--black);
+    }
+    .widget-sub {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--gray-600);
+      max-width: 280px;
+    }
+
+    /* ElevenLabs widget styling */
+    elevenlabs-convai {
+      --eleven-labs-convai-background-color: transparent;
+    }
+
+    /* FEATURES */
+    .features {
+      padding: 6rem 4rem;
+      background: var(--black);
+      color: var(--white);
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 4rem;
+      gap: 2rem;
+    }
+    .section-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 1rem;
+    }
+    h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .feature-card {
+      padding: 2.5rem 2rem;
+      background: #161616;
+      border: 1px solid #222;
+      border-radius: 0;
+    }
+    .feature-card:first-child { border-radius: 4px 0 0 4px; }
+    .feature-card:last-child { border-radius: 0 4px 4px 0; }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 1.5rem;
+      opacity: 0.6;
+    }
+    .feature-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+      font-weight: 400;
+    }
+    .feature-card p {
+      font-size: 0.875rem;
+      font-weight: 300;
+      color: var(--gray-400);
+      line-height: 1.7;
+    }
+
+    /* DEMO SECTION */
+    .demo-section {
+      padding: 7rem 4rem;
+      background: var(--white);
+    }
+    .demo-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .demo-inner .section-eyebrow { color: var(--gray-600); }
+    .demo-inner h2 { color: var(--black); margin-bottom: 1rem; }
+    .demo-inner .section-desc {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--gray-600);
+      margin-bottom: 3rem;
+      line-height: 1.7;
+    }
+    .demo-frame {
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: 16px;
+      padding: 3.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+    .demo-instructions {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--gray-600);
+      max-width: 360px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* FAQ / DETAILS */
+    .details-section {
+      padding: 6rem 4rem;
+      background: var(--gray-100);
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .details-grid h2 { color: var(--black); }
+    .faq-list { display: flex; flex-direction: column; gap: 0; }
+    .faq-item {
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .faq-item:first-child { border-top: 1px solid var(--gray-200); }
+    .faq-q {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--black);
+      margin-bottom: 0.5rem;
+    }
+    .faq-a {
+      font-size: 0.875rem;
+      font-weight: 300;
+      color: var(--gray-600);
+      line-height: 1.7;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 2.5rem 4rem;
+      border-top: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--black);
+      text-decoration: none;
+    }
+    .footer-text {
+      font-size: 0.8rem;
+      font-weight: 300;
+      color: var(--gray-400);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 3rem; }
+      .hero-widget { display: none; }
+      .features { padding: 4rem 1.5rem; }
+      .feature-grid { grid-template-columns: 1fr; gap: 1px; }
+      .feature-card:first-child { border-radius: 4px 4px 0 0; }
+      .feature-card:last-child { border-radius: 0 0 4px 4px; }
+      .demo-section { padding: 4rem 1.5rem; }
+      .details-section { padding: 4rem 1.5rem; }
+      .details-grid { grid-template-columns: 1fr; gap: 2rem; }
+      footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
+    }
+
+    /* FADE-IN ANIMATION */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">Jeanie</a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a class="nav-cta" href="#demo">Talk to Jeanie</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <span class="hero-eyebrow">Conversational AI</span>
+      <h1>Meet your AI,<br><em>always listening.</em></h1>
+      <p class="hero-desc">
+        Jeanie is a voice-first AI assistant that understands context, speaks naturally, and is available around the clock — no typing required.
+      </p>
+
+    </div>
+
+    <div class="hero-widget">
+      <div class="widget-card">
+        <div class="widget-pulse">
+          <!-- mic icon -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm-1 17.93V21H9v2h6v-2h-2v-2.07A8 8 0 0 0 20 11h-2a6 6 0 0 1-12 0H4a8 8 0 0 0 7 7.93z"/>
+          </svg>
+        </div>
+        <span class="widget-label">Live agent</span>
+        <p class="widget-title">Jeanie is ready</p>
+        <p class="widget-sub">Click the button below to begin a voice conversation</p>
+        <elevenlabs-convai agent-id="agent_9101kmwse1t0ev499tf2kjhzz8px"></elevenlabs-convai>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="section-header fade-up">
+      <div>
+        <p class="section-eyebrow">Why Jeanie</p>
+        <h2>Built for real<br>conversations</h2>
+      </div>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card fade-up">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 0 1 6 0v8.25a3 3 0 0 1-3 3z"/>
+        </svg>
+        <h3>Natural voice</h3>
+        <p>Ultra-realistic speech synthesis powered by ElevenLabs — indistinguishable from a real human voice, with natural cadence and emotion.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay: 0.1s;">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
+        </svg>
+        <h3>Instant response</h3>
+        <p>Sub-second latency ensures conversations feel fluid and natural. No awkward pauses, no loading spinners — just seamless dialogue.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay: 0.2s;">
+        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+        </svg>
+        <h3>Always secure</h3>
+        <p>All conversations are encrypted end-to-end. Your data never leaves your control, with full compliance and enterprise-grade privacy built in.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO -->
+  <section class="demo-section" id="demo">
+    <div class="demo-inner">
+      <p class="section-eyebrow">Live demo</p>
+      <h2>Try it yourself</h2>
+      <p class="section-desc">
+        Click the button to start a live voice session with Jeanie. Ask anything — she's designed to have a real conversation, not just answer keywords.
+      </p>
+      <div class="demo-frame fade-up">
+        <p class="demo-instructions">
+          Allow microphone access when prompted. Speak naturally — Jeanie understands full sentences, follow-ups, and context.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="details-section" id="faq">
+    <div class="details-grid">
+      <div class="fade-up">
+        <p class="section-eyebrow" style="color: var(--gray-600);">Questions</p>
+        <h2 style="color: var(--black);">Common<br><em style="font-style:italic; color: var(--gray-600);">questions</em></h2>
+      </div>
+      <div class="faq-list fade-up">
+        <div class="faq-item">
+          <p class="faq-q">What can I ask Jeanie?</p>
+          <p class="faq-a">Jeanie is configured to assist with a wide range of topics. She can answer questions related to the latest government schemes, CDC Vouchers and Passion Card. She can converse in English, Chinese, Malay or Tamil — all through natural voice interaction.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">Do I need to create an account?</p>
+          <p class="faq-a">No account needed. Click the button and you're connected instantly. Conversations are session-based and not stored after you close the page.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">Which browsers are supported?</p>
+          <p class="faq-a">Jeanie works on all modern browsers — Chrome, Firefox, Safari, and Edge. Make sure microphone permissions are enabled when prompted.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">How is this powered?</p>
+          <p class="faq-a">Voice synthesis and conversational AI are provided by ElevenLabs' Conversational AI platform. The agent is fully customisable with different voices, personalities, and knowledge bases.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a class="footer-logo" href="#">Jeanie</a>
+    <span class="footer-text">Powered by ElevenLabs Conversational AI</span>
+    <span class="footer-text">© 2026</span>
+  </footer>
+
+  <!-- ElevenLabs embed script -->
+  <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+  <!-- Scroll animations -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
