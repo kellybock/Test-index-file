@@ -447,7 +447,7 @@
         <span class="widget-label">Live agent</span>
         <p class="widget-title">Jeanie is ready</p>
         <p class="widget-sub">Click the button below to begin a voice conversation</p>
-        <elevenlabs-convai agent-id="agent_9101kmwse1t0ev499tf2kjhzz8px"></elevenlabs-convai>
+        <button class="btn-primary" style="margin-top: 1rem; cursor: pointer;" onclick="launchConversation()">Start Voice Chat</button>
       </div>
     </div>
   </section>
@@ -550,6 +550,17 @@
       });
     }, { threshold: 0.15 });
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Launch conversation
+    function launchConversation() {
+      if (window.ElevenLabsConvai) {
+        window.ElevenLabsConvai.openConversation({
+          agentId: 'agent_9101kmwse1t0ev499tf2kjhzz8px'
+        });
+      } else {
+        alert('ElevenLabs is loading. Please wait a moment and try again.');
+      }
+    }
   </script>
 </body>
 </html>
